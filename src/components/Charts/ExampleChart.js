@@ -8,7 +8,7 @@ ReactFC.fcRoot(FusionCharts, Charts, FusionTheme);
 
 const ChartComponent = ({ data }) => {
   const chartConfigs = {
-    type: 'column2d',
+    type: 'bar3d',
     width: 400,
     height: 400,
     dataFormat: 'json',
