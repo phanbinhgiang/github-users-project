@@ -4,29 +4,46 @@ import { GithubContext } from '../context/context';
 import { ExampleChart, Pie3D, Column3D, Bar3D, Doughnut2D } from './Charts';
 const Repos = () => {
   const { repos } = React.useContext(GithubContext);
-  let languages = repos.reduce((total, item) => {
-    const { language } = item;
+  const languages = repos.reduce((total, item) => {
+    const { language, stargazers_count } = item;
     if (!language) return total;
 
     if (!total[language]) {
-      total[language] = { label: language, value: 1 };
+      total[language] = { label: language, value: 1, stats: stargazers_count };
     } else {
-      total[language] = { ...total[language], value: total[language].value + 1 };
+      total[language] = {
+        ...total[language],
+        value: total[language].value + 1,
+        stats: total[language].stats + stargazers_count,
+      };
     }
     return total;
   }, {});
 
-  languages = Object.values(languages)
+  const mostUsed = Object.values(languages)
     .sort((a, b) => {
       return b.value - a.value;
     })
     .slice(0, 5);
 
+  const mostPopular = Object.values(languages)
+    .sort((a, b) => {
+      return b.stats - a.stats;
+    })
+    .map((item) => {
+      return { ...item, value: item.stats };
+    })
+    .slice(0, 5);
+
+  let { stats, forks } = repos.reduce((total, item) => {}, { stats: {}, forks: {} });
+
   return (
     <section className="section">
       <Wrapper className="section-center">
-        <Pie3D data={languages} />
-        <Doughnut2D data={languages} />
+        <Pie3D data={mostUsed} />
+        <Column3D data={mostUsed} />
+        <Doughnut2D data={mostPopular} />
+        <Bar3D data={mostUsed} />
       </Wrapper>
     </section>
   );
